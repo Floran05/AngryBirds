@@ -31,6 +31,7 @@ void AAShooterController::SetupInputComponent()
 	{
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAShooterController::Look);
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &AAShooterController::Shoot);
+		EnhancedInputComponent->BindAction(ShootPowerAction, ETriggerEvent::Triggered, this, &AAShooterController::ShootPower);
 	}
 }
 
@@ -54,5 +55,22 @@ void AAShooterController::Shoot(const FInputActionInstance& Instance)
 	if (AAShooter* shooter = Cast<AAShooter>(GetPawn()))
 	{
 		shooter->Shoot();
+	}
+}
+
+void AAShooterController::ShootPower(const FInputActionInstance& Instance)
+{
+	float Axis = Instance.GetValue().Get<float>();
+
+	if (AAShooter* Shooter = Cast<AAShooter>(GetPawn()))
+	{
+		if (Axis >= 0.f)
+		{
+			Shooter->IncreasePower();
+		}
+		else
+		{
+			Shooter->DecreasePower();
+		}
 	}
 }

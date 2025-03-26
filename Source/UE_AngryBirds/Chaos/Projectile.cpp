@@ -30,6 +30,8 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	if (OtherActor == nullptr || !OtherActor->IsA(AChaosBuilding::StaticClass())) return;
 	if (!FieldSystemClass) return;
 
+	if (GEngine) GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.f, FColor::Purple, TEXT("ON HIT"));
+
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	AFieldSystemActor* FieldSystem = GetWorld()->SpawnActor<AFieldSystemActor>(FieldSystemClass, Hit.Location, GetActorForwardVector().Rotation(), SpawnParams);

@@ -14,6 +14,10 @@
 
 // Sets default values
 AAShooter::AAShooter()
+	: ImpulseMinMultiplier(200000.f)
+	, ImpulseMaxMultiplier(500000.f)
+	, ScrollAmount(20)
+	, ShootPower(1.f)
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -90,7 +94,6 @@ void AAShooter::SetProjectileVelocity()
 void AAShooter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void AAShooter::Shoot()
@@ -98,6 +101,18 @@ void AAShooter::Shoot()
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Owner = this;
 	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, GetActorLocation(), Projectile->GetRelativeRotation(), SpawnParameters);
-	SpawnedProjectile->Launch(Projectile->GetForwardVector() * 200000.f);
+	SpawnedProjectile->Launch(Projectile->GetForwardVector() * ((ImpulseMaxMultiplier - ImpulseMinMultiplier) * ShootPower + ImpulseMinMultiplier));
+}
+
+void AAShooter::IncreasePower()
+{
+	ShootPower += (1.f / ScrollAmount);
+	if (ShootPower > 1.f) ShootPower = 1.f;
+}
+
+void AAShooter::DecreasePower()
+{
+	ShootPower -= (1.f / ScrollAmount);
+	if (ShootPower < 0.f) ShootPower = 0.f;
 }
 

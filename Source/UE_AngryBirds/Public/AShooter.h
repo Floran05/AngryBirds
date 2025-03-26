@@ -58,6 +58,17 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> ProjectileClass;
 
+	UPROPERTY(EditAnywhere, Category=AngryBirds)
+	float ImpulseMinMultiplier;
+
+	UPROPERTY(EditAnywhere, Category=AngryBirds)
+	float ImpulseMaxMultiplier;
+
+	UPROPERTY(EditAnywhere, Category=AngryBirds)
+	int ScrollAmount;
+
+	float ShootPower;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -67,5 +78,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Shoot();
+
+	void IncreasePower();
+	void DecreasePower();
 
 };

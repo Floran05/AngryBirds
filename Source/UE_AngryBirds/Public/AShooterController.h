@@ -18,13 +18,18 @@ protected:
 
 	void Look(const FInputActionInstance& Instance);
 	void Shoot(const FInputActionInstance& Instance);
+	void ShootPower(const FInputActionInstance& Instance);
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TSoftObjectPtr<UInputMappingContext> InputMapping;
 
 	UPROPERTY(EditAnywhere)
 	UInputAction* LookAction;
+
 	UPROPERTY(EditAnywhere)
 	UInputAction* ShootAction;
+
+	UPROPERTY(EditAnywhere)
+	UInputAction* ShootPowerAction;
 
 };
