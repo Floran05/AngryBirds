@@ -26,4 +26,5 @@ protected:
 	UInputAction* LookAction;
 	UPROPERTY(EditAnywhere)
 	UInputAction* ShootAction;
+
 };

@@ -13,37 +13,26 @@ AChaosBuilding::AChaosBuilding()
 	GeometryCollection = CreateDefaultSubobject<UGeometryCollectionComponent>(TEXT("GeometryCollection"));
 	GeometryCollection->SetupAttachment(SceneRoot);
 	GeometryCollection->OnChaosBreakEvent.AddDynamic(this, &AChaosBuilding::OnChaosBreakEvent);
-	GeometryCollection->OnChaosCrumblingEvent.AddDynamic(this, &AChaosBuilding::OnChaosCrumblingEvent);
 }
 
 void AChaosBuilding::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	TotalFragments = GeometryCollection->GetNumElements(FGeometryCollection::TransformGroup);
+	DestroyedFragments = 0;
 }
 
 void AChaosBuilding::OnChaosBreakEvent(const FChaosBreakEvent& BreakEvent)
 {
+	DestroyedFragments++;
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(
 			INDEX_NONE,
-			2.f,
+			5.f,
 			FColor::Blue,
-			TEXT("ON CHAOS BREAK EVENT")
-		);
-	}
-}
-
-void AChaosBuilding::OnChaosCrumblingEvent(const FChaosCrumblingEvent& CrumbleEvent)
-{
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(
-			INDEX_NONE,
-			2.f,
-			FColor::Red,
-			TEXT("ON CHAOS CRUMBLING EVENT")
+			FString::Printf(TEXT("Destruction percentage: %.2f"), (float(DestroyedFragments) / float(TotalFragments)) * 100.0f)
 		);
 	}
 }

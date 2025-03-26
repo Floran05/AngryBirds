@@ -26,12 +26,15 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UGeometryCollectionComponent* GeometryCollection;
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	int TotalFragments;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	int DestroyedFragments;
+
 protected:
 
 	UFUNCTION()
 	void OnChaosBreakEvent(const FChaosBreakEvent& BreakEvent);
-
-	UFUNCTION()
-	void OnChaosCrumblingEvent(const FChaosCrumblingEvent& CrumbleEvent);
 
 };

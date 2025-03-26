@@ -9,6 +9,7 @@
 #include "Components/SplineComponent.h"
 #include "NiagaraComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "../Chaos/Projectile.h"
 
 
 // Sets default values
@@ -90,5 +91,13 @@ void AAShooter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AAShooter::Shoot()
+{
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Owner = this;
+	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, GetActorLocation(), Projectile->GetRelativeRotation(), SpawnParameters);
+	SpawnedProjectile->Launch(Projectile->GetForwardVector() * 200000.f);
 }
 

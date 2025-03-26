@@ -53,6 +53,6 @@ void AAShooterController::Shoot(const FInputActionInstance& Instance)
 
 	if (AAShooter* shooter = Cast<AAShooter>(GetPawn()))
 	{
-		//shooter->GetProjectile()->
+		shooter->Shoot();
 	}
 }

@@ -9,7 +9,6 @@
 #include "ChaosBuilding.h"
 
 AProjectile::AProjectile()
-	: Impulse(FVector(0.f))
 {
 	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	SetRootComponent(SceneRoot);
@@ -24,8 +23,6 @@ AProjectile::AProjectile()
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-
-	Mesh->AddImpulse(Impulse);
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -36,4 +33,9 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	AFieldSystemActor* FieldSystem = GetWorld()->SpawnActor<AFieldSystemActor>(FieldSystemClass, Hit.Location, GetActorForwardVector().Rotation(), SpawnParams);
+}
+
+void AProjectile::Launch(const FVector& ImpulseVector)
+{
+	Mesh->AddImpulse(ImpulseVector);
 }
