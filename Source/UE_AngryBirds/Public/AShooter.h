@@ -29,6 +29,9 @@ protected:
 	virtual void ShowProjectilePath();
 	virtual void SetProjectileVelocity();
 
+	UFUNCTION()
+	void OnRearm();
+
 	//		COMPONENTS
 	// =======================
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
@@ -68,6 +71,10 @@ protected:
 	int ScrollAmount;
 
 	float ShootPower;
+	bool bCanShoot;
+
+	UPROPERTY(EditAnywhere, Category=AngryBirds)
+	float ShootDelay;
 
 public:
 	// Called every frame

@@ -37,4 +37,12 @@ protected:
 	UFUNCTION()
 	void OnChaosBreakEvent(const FChaosBreakEvent& BreakEvent);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnAddScore(float Score);
+
+public:
+
+	UFUNCTION()
+	void AddImpulseAtHitLocation(const FVector& Impulse, const FVector& Location);
+
 };

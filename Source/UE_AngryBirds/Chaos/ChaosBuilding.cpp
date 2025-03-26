@@ -12,6 +12,8 @@ AChaosBuilding::AChaosBuilding()
 
 	GeometryCollection = CreateDefaultSubobject<UGeometryCollectionComponent>(TEXT("GeometryCollection"));
 	GeometryCollection->SetupAttachment(SceneRoot);
+	GeometryCollection->SetSimulatePhysics(true);
+	GeometryCollection->SetNotifyRigidBodyCollision(true);
 	GeometryCollection->OnChaosBreakEvent.AddDynamic(this, &AChaosBuilding::OnChaosBreakEvent);
 }
 
@@ -26,13 +28,10 @@ void AChaosBuilding::BeginPlay()
 void AChaosBuilding::OnChaosBreakEvent(const FChaosBreakEvent& BreakEvent)
 {
 	DestroyedFragments++;
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(
-			INDEX_NONE,
-			5.f,
-			FColor::Blue,
-			FString::Printf(TEXT("Destruction percentage: %.2f"), (float(DestroyedFragments) / float(TotalFragments)) * 100.0f)
-		);
-	}
+	OnAddScore(GeometryCollection->GetMass() * (1.f / TotalFragments));
+}
+
+void AChaosBuilding::AddImpulseAtHitLocation(const FVector& Impulse, const FVector& Location)
+{
+	GeometryCollection->AddImpulseAtLocation(Impulse, Location);
 }

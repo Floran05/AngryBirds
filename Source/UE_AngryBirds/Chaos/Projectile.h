@@ -28,6 +28,12 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AFieldSystemActor> FieldSystemClass;
 
+	UPROPERTY(EditAnywhere, Category=AngryBirds)
+	bool bEnableAddImpulseOnHit;
+
+	UPROPERTY(EditAnywhere, Category=AngryBirds)
+	float ImpulseMultiplier;
+
 protected:
 
 	UFUNCTION()

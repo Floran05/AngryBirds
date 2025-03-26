@@ -9,6 +9,8 @@
 #include "ChaosBuilding.h"
 
 AProjectile::AProjectile()
+	: bEnableAddImpulseOnHit(true)
+	, ImpulseMultiplier(1000.f)
 {
 	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	SetRootComponent(SceneRoot);
@@ -30,14 +32,21 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	if (OtherActor == nullptr || !OtherActor->IsA(AChaosBuilding::StaticClass())) return;
 	if (!FieldSystemClass) return;
 
-	if (GEngine) GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.f, FColor::Purple, TEXT("ON HIT"));
-
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
-	AFieldSystemActor* FieldSystem = GetWorld()->SpawnActor<AFieldSystemActor>(FieldSystemClass, Hit.Location, GetActorForwardVector().Rotation(), SpawnParams);
+	FRotator ActorRotation = GetActorRotation();
+	// AFieldSystemActor* FieldSystem = GetWorld()->SpawnActor<AFieldSystemActor>(FieldSystemClass, Hit.Location, GetActorForwardVector().Rotation(), SpawnParams);
+	AFieldSystemActor* FieldSystem = GetWorld()->SpawnActor<AFieldSystemActor>(FieldSystemClass, Hit.Location, FRotator(ActorRotation.Pitch - 90.f, ActorRotation.Yaw, ActorRotation.Roll), SpawnParams);
+
+	if (!bEnableAddImpulseOnHit) return;
+	if (AChaosBuilding* Building = Cast<AChaosBuilding>(OtherActor))
+	{
+		Building->AddImpulseAtHitLocation(NormalImpulse * -1.f, Hit.Location);
+	}
 }
 
 void AProjectile::Launch(const FVector& ImpulseVector)
 {
+	if (Mesh == nullptr) return;
 	Mesh->AddImpulse(ImpulseVector);
 }

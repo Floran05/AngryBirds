@@ -18,6 +18,8 @@ AAShooter::AAShooter()
 	, ImpulseMaxMultiplier(500000.f)
 	, ScrollAmount(20)
 	, ShootPower(1.f)
+	, bCanShoot(true)
+	, ShootDelay(1.5f)
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -90,6 +92,12 @@ void AAShooter::SetProjectileVelocity()
 
 }
 
+void AAShooter::OnRearm()
+{
+	bCanShoot = true;
+	Projectile->SetVisibility(true, true);
+}
+
 // Called to bind functionality to input
 void AAShooter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -98,10 +106,17 @@ void AAShooter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AAShooter::Shoot()
 {
+	if (!ProjectileClass || !bCanShoot) return;
+
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Owner = this;
 	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, GetActorLocation(), Projectile->GetRelativeRotation(), SpawnParameters);
 	SpawnedProjectile->Launch(Projectile->GetForwardVector() * ((ImpulseMaxMultiplier - ImpulseMinMultiplier) * ShootPower + ImpulseMinMultiplier));
+
+	Projectile->SetVisibility(false, true);
+	bCanShoot = false;
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AAShooter::OnRearm, ShootDelay, false);
 }
 
 void AAShooter::IncreasePower()
