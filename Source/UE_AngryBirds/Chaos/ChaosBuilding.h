@@ -47,4 +47,6 @@ public:
 
 	float GetMaxScoreForBuilding() const;
 
+	void SetGeometrySimulatePhysics(bool bSimulate);
+
 };

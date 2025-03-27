@@ -42,6 +42,11 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	// AFieldSystemActor* FieldSystem = GetWorld()->SpawnActor<AFieldSystemActor>(FieldSystemClass, Hit.Location, GetActorForwardVector().Rotation(), SpawnParams);
 	AFieldSystemActor* FieldSystem = GetWorld()->SpawnActor<AFieldSystemActor>(FieldSystemClass, Hit.Location, FRotator(ActorRotation.Pitch - 90.f, ActorRotation.Yaw, ActorRotation.Roll), SpawnParams);
 
+	if (AChaosBuilding* Building = Cast<AChaosBuilding>(OtherActor))
+	{
+		Building->SetGeometrySimulatePhysics(true);
+	}
+
 	if (!bEnableAddImpulseOnHit) return;
 	if (AChaosBuilding* Building = Cast<AChaosBuilding>(OtherActor))
 	{

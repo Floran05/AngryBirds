@@ -74,13 +74,11 @@ protected:
 	int ScrollAmount;
 
 	float ShootPower;
+	FVector ShootVector;
 	bool bCanShoot;
 
 	UPROPERTY(EditAnywhere, Category=AngryBirds)
 	float ShootDelay;
-
-	UPROPERTY(EditAnywhere)
-	class UAnimMontage* ShootAnimMontage;
 
 	UPROPERTY(EditAnywhere)
 	int BallAmount;

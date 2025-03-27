@@ -18,7 +18,7 @@ AAShooter::AAShooter()
 	: ImpulseMinMultiplier(200000.f)
 	, ImpulseMaxMultiplier(500000.f)
 	, ScrollAmount(20)
-	, ShootPower(1.f)
+	, ShootPower(0.5f)
 	, bCanShoot(true)
 	, ShootDelay(1.5f)
 	, BallAmount(10)
@@ -101,10 +101,9 @@ void AAShooter::OnShootNotify()
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Owner = this;
 	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, Projectile->GetComponentLocation(), Projectile->GetRelativeRotation(), SpawnParameters);
-	SpawnedProjectile->Launch(Projectile->GetForwardVector() * ((ImpulseMaxMultiplier - ImpulseMinMultiplier) * ShootPower + ImpulseMinMultiplier));
+	SpawnedProjectile->Launch(ShootVector * ((ImpulseMaxMultiplier - ImpulseMinMultiplier) * ShootPower + ImpulseMinMultiplier));
 
 	Projectile->SetVisibility(false, true);
-	bCanShoot = false;
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AAShooter::OnRearm, ShootDelay, false);
 }
@@ -122,17 +121,13 @@ void AAShooter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AAShooter::Shoot()
 {
-	if (!ProjectileClass || !bCanShoot || !ShootAnimMontage || RemainingBalls <= 0) return;
+	if (!ProjectileClass || !bCanShoot || RemainingBalls <= 0) return;
 
 	bCanShoot = false;
 	RemainingBalls--;
+	ShootVector = Projectile->GetForwardVector();
+	ProjectilePath->SetVisibility(false, true);
 	OnShoot();
-
-	//if (UAnimInstance* AnimInstance = SkeletalMesh->GetAnimInstance())
-	//{
-	//	//AnimInstance->Montage_Play(ShootAnimMontage);
-	//	//AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &AAShooter::OnShootNotify);
-	//}
 }
 
 void AAShooter::IncreasePower()
