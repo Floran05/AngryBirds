@@ -64,7 +64,7 @@ void AAShooter::BeginPlay()
 	Super::BeginPlay();
 
 	ProjectileRadius = 100.f * 0.5f * Projectile->GetRelativeScale3D().X;
-	SetProjectileForward();
+	SetProjectileForward(GetActorRotation().Quaternion());
 }
 
 // Called every frame
@@ -147,9 +147,9 @@ void AAShooter::DecreasePower()
 	OnPowerChanged(ShootPower);
 }
 
-void AAShooter::SetProjectileForward()
+void AAShooter::SetProjectileForward(FQuat quat)
 {
-	Projectile->SetWorldRotation(GetActorRotation());
+	Projectile->SetRelativeRotation(quat);
 }
 
 void AAShooter::TeleportNext()
@@ -164,8 +164,9 @@ void AAShooter::TeleportNext()
 	}
 
 	SetActorLocation(TeleportList[TeleportIndex].GetLocation());
+	FQuat quat = quat.MakeFromRotationVector(FVector(0, 0, 30));
 	SkeletalMesh->SetRelativeRotation(TeleportList[TeleportIndex].GetRotation());
-	SetProjectileForward();
+	SetProjectileForward(TeleportList[TeleportIndex].GetRotation() * quat);
 }
 
 void AAShooter::TeleportPrevious()
@@ -180,7 +181,8 @@ void AAShooter::TeleportPrevious()
 	}
 
 	SetActorLocation(TeleportList[TeleportIndex].GetLocation());
+	FQuat quat = quat.MakeFromRotationVector(FVector(0, 0, 30));
 	SkeletalMesh->SetRelativeRotation(TeleportList[TeleportIndex].GetRotation());
-	SetProjectileForward();
+	SetProjectileForward(TeleportList[TeleportIndex].GetRotation() * quat);
 }
 

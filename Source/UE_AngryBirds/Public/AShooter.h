@@ -115,7 +115,7 @@ public:
 	void IncreasePower();
 	void DecreasePower();
 
-	void SetProjectileForward();
+	void SetProjectileForward(FQuat quat);
 
 	void TeleportNext();
 	void TeleportPrevious();
