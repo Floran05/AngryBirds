@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "Animation/AnimNotifies/AnimNotify.h"
 #include "AShooter.generated.h"
 
 class USceneComponent;
@@ -26,8 +27,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void ShowProjectilePath();
-	virtual void SetProjectileVelocity();
 
 	UFUNCTION()
 	void OnRearm();
@@ -36,6 +35,9 @@ protected:
 	// =======================
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	USceneComponent* Root;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USkeletalMeshComponent* SkeletalMesh;
 
 	UPROPERTY(EditAnywhere)
 	USpringArmComponent* SpringArm;
@@ -51,6 +53,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
 	UNiagaraComponent* PathVisual;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	UNiagaraComponent* ProjectileFX;
 	// =======================
 
 	UPROPERTY()
@@ -76,6 +81,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category=AngryBirds)
 	float ShootDelay;
 
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* ShootAnimMontage;
+
+	UPROPERTY(EditAnywhere)
+	int BallAmount;
+
+	UPROPERTY(VisibleAnywhere)
+	int RemainingBalls;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -85,6 +99,18 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Shoot();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnShoot();
+
+	UFUNCTION(BlueprintCallable)
+	void OnShootNotify();
+
+	UFUNCTION(BlueprintCallable)
+	int GetRemainingBalls() const;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPowerChanged(float Power);
 
 	void IncreasePower();
 	void DecreasePower();

@@ -5,6 +5,7 @@
 #include "Components/SceneComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SplineComponent.h"
 #include "NiagaraComponent.h"
@@ -20,6 +21,8 @@ AAShooter::AAShooter()
 	, ShootPower(1.f)
 	, bCanShoot(true)
 	, ShootDelay(1.5f)
+	, BallAmount(5)
+	, RemainingBalls(5)
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -27,14 +30,17 @@ AAShooter::AAShooter()
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 
+	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMesh");
+	SkeletalMesh->SetupAttachment(Root);
+
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
-	SpringArm->SetupAttachment(Root);
+	SpringArm->SetupAttachment(SkeletalMesh);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 
 	Projectile = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SphereMesh"));
-	Projectile->SetupAttachment(Root);
+	Projectile->SetupAttachment(SkeletalMesh, FName("RightHand"));
 
 	ProjectilePath = CreateDefaultSubobject<USplineComponent>(TEXT("ProjectilePath"));
 	ProjectilePath->SetupAttachment(Projectile);
@@ -42,8 +48,10 @@ AAShooter::AAShooter()
 	PathVisual = CreateDefaultSubobject<UNiagaraComponent>(TEXT("PathVisual"));
 	PathVisual->SetupAttachment(ProjectilePath);
 
+	ProjectileFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileFX"));
+	ProjectileFX->SetupAttachment(Projectile);
+
 	LaunchVelocity = 1000.0f;
-	ProjectileRadius = 10.0f;
 }
 
 UStaticMeshComponent* AAShooter::GetProjectile() const
@@ -56,6 +64,7 @@ void AAShooter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	ProjectileRadius = 100.f * 0.5f * Projectile->GetRelativeScale3D().X;
 }
 
 // Called every frame
@@ -66,7 +75,7 @@ void AAShooter::Tick(float DeltaTime)
 	//Compute Prediction
 	FPredictProjectilePathParams Params;
 	Params.StartLocation = Projectile->GetComponentToWorld().GetLocation();
-	Params.LaunchVelocity = Projectile->GetComponentToWorld().GetRotation().Vector() * LaunchVelocity;
+	Params.LaunchVelocity = Projectile->GetForwardVector() * ((ImpulseMaxMultiplier - ImpulseMinMultiplier) * ShootPower + ImpulseMinMultiplier) / 1000.f;
 	Params.ProjectileRadius = ProjectileRadius;
 	FPredictProjectilePathResult Result;
 	bool bHit = UGameplayStatics::PredictProjectilePath(GetWorld(), Params, Result);
@@ -82,20 +91,28 @@ void AAShooter::Tick(float DeltaTime)
 	ProjectilePath->SetSplinePoints(PointsLocation, ESplineCoordinateSpace::World);
 }
 
-void AAShooter::ShowProjectilePath()
-{
-
-}
-
-void AAShooter::SetProjectileVelocity()
-{
-
-}
-
 void AAShooter::OnRearm()
 {
 	bCanShoot = true;
 	Projectile->SetVisibility(true, true);
+}
+
+void AAShooter::OnShootNotify()
+{
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Owner = this;
+	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, Projectile->GetRelativeLocation() + GetActorLocation(), Projectile->GetRelativeRotation(), SpawnParameters);
+	SpawnedProjectile->Launch(Projectile->GetForwardVector() * ((ImpulseMaxMultiplier - ImpulseMinMultiplier) * ShootPower + ImpulseMinMultiplier));
+
+	Projectile->SetVisibility(false, true);
+	bCanShoot = false;
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AAShooter::OnRearm, ShootDelay, false);
+}
+
+int AAShooter::GetRemainingBalls() const
+{
+	return RemainingBalls;
 }
 
 // Called to bind functionality to input
@@ -106,28 +123,31 @@ void AAShooter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AAShooter::Shoot()
 {
-	if (!ProjectileClass || !bCanShoot) return;
+	if (!ProjectileClass || !bCanShoot || !ShootAnimMontage || RemainingBalls <= 0) return;
 
-	FActorSpawnParameters SpawnParameters;
-	SpawnParameters.Owner = this;
-	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, GetActorLocation(), Projectile->GetRelativeRotation(), SpawnParameters);
-	SpawnedProjectile->Launch(Projectile->GetForwardVector() * ((ImpulseMaxMultiplier - ImpulseMinMultiplier) * ShootPower + ImpulseMinMultiplier));
+	RemainingBalls--;
+	OnShoot();
 
-	Projectile->SetVisibility(false, true);
-	bCanShoot = false;
-	FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AAShooter::OnRearm, ShootDelay, false);
+	//if (UAnimInstance* AnimInstance = SkeletalMesh->GetAnimInstance())
+	//{
+	//	//AnimInstance->Montage_Play(ShootAnimMontage);
+	//	//AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &AAShooter::OnShootNotify);
+	//}
 }
 
 void AAShooter::IncreasePower()
 {
 	ShootPower += (1.f / ScrollAmount);
 	if (ShootPower > 1.f) ShootPower = 1.f;
+
+	OnPowerChanged(ShootPower);
 }
 
 void AAShooter::DecreasePower()
 {
 	ShootPower -= (1.f / ScrollAmount);
 	if (ShootPower < 0.f) ShootPower = 0.f;
+
+	OnPowerChanged(ShootPower);
 }
 

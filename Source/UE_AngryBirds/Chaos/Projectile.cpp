@@ -5,6 +5,7 @@
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/ChildActorComponent.h"
+#include "NiagaraComponent.h"
 #include "Field/FieldSystemActor.h"
 #include "ChaosBuilding.h"
 
@@ -20,6 +21,9 @@ AProjectile::AProjectile()
 	Mesh->SetSimulatePhysics(true);
 	Mesh->SetNotifyRigidBodyCollision(true); // Simulation Generate Hit Events
 	Mesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+
+	ProjectileFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileFX"));
+	ProjectileFX->SetupAttachment(Mesh);
 }
 
 void AProjectile::BeginPlay()

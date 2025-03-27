@@ -25,6 +25,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* Mesh;
 
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	class UNiagaraComponent* ProjectileFX;
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AFieldSystemActor> FieldSystemClass;
 
