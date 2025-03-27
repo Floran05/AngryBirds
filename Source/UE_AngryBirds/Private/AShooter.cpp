@@ -131,6 +131,12 @@ void AAShooter::Shoot()
 	OnShoot();
 }
 
+void AAShooter::SetBallAmount(int Amount)
+{
+	BallAmount = Amount;
+	RemainingBalls = Amount;
+}
+
 void AAShooter::IncreasePower()
 {
 	ShootPower += (1.f / ScrollAmount);
@@ -154,6 +160,7 @@ void AAShooter::SetProjectileForward(FQuat quat)
 
 void AAShooter::TeleportNext()
 {
+	if (!TeleportList.Num()) return;
 	if (TeleportIndex == TeleportList.Num()-1)
 	{
 		TeleportIndex = 0;
@@ -171,6 +178,7 @@ void AAShooter::TeleportNext()
 
 void AAShooter::TeleportPrevious()
 {
+	if (!TeleportList.Num()) return;
 	if (TeleportIndex == 0)
 	{
 		TeleportIndex = TeleportList.Num()-1;

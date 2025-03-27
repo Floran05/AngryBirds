@@ -40,8 +40,3 @@ float AChaosBuilding::GetMaxScoreForBuilding() const
 {
 	return GeometryCollection->GetMass() * 0.001f;
 }
-
-void AChaosBuilding::SetGeometrySimulatePhysics(bool bSimulate)
-{
-	GeometryCollection->SetSimulatePhysics(bSimulate);
-}

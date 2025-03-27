@@ -112,6 +112,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPowerChanged(float Power);
 
+	UFUNCTION(BlueprintCallable)
+	void SetBallAmount(int Amount);
+
 	void IncreasePower();
 	void DecreasePower();
 
