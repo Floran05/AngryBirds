@@ -45,4 +45,6 @@ public:
 	UFUNCTION()
 	void AddImpulseAtHitLocation(const FVector& Impulse, const FVector& Location);
 
+	float GetMaxScoreForBuilding() const;
+
 };

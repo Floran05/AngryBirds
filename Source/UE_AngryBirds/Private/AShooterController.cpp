@@ -44,8 +44,8 @@ void AAShooterController::Look(const FInputActionInstance& Instance)
 		shooter->GetProjectile()->AddWorldRotation(FRotator(vector.Y, vector.X, 0.0f));
 	}
 
-	/*GetPawn()->AddControllerYawInput(vector.X);
-	GetPawn()->AddControllerPitchInput(vector.Y);*/
+	/* GetPawn()->AddControllerYawInput(vector.X);
+	GetPawn()->AddControllerPitchInput(vector.Y); */
 }
 
 void AAShooterController::Shoot(const FInputActionInstance& Instance)

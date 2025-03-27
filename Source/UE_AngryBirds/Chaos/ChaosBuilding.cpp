@@ -35,3 +35,8 @@ void AChaosBuilding::AddImpulseAtHitLocation(const FVector& Impulse, const FVect
 {
 	GeometryCollection->AddImpulseAtLocation(Impulse, Location);
 }
+
+float AChaosBuilding::GetMaxScoreForBuilding() const
+{
+	return GeometryCollection->GetMass();
+}
