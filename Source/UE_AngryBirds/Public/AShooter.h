@@ -86,6 +86,10 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	int RemainingBalls;
 
+	UPROPERTY(EditAnywhere)
+	TArray<FTransform> TeleportList;
+	int TeleportIndex = 0;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -111,4 +115,8 @@ public:
 	void IncreasePower();
 	void DecreasePower();
 
+	void SetProjectileForward();
+
+	void TeleportNext();
+	void TeleportPrevious();
 };

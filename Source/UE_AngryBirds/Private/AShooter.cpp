@@ -64,6 +64,7 @@ void AAShooter::BeginPlay()
 	Super::BeginPlay();
 
 	ProjectileRadius = 100.f * 0.5f * Projectile->GetRelativeScale3D().X;
+	SetProjectileForward();
 }
 
 // Called every frame
@@ -144,5 +145,42 @@ void AAShooter::DecreasePower()
 	if (ShootPower < 0.f) ShootPower = 0.f;
 
 	OnPowerChanged(ShootPower);
+}
+
+void AAShooter::SetProjectileForward()
+{
+	Projectile->SetWorldRotation(GetActorRotation());
+}
+
+void AAShooter::TeleportNext()
+{
+	if (TeleportIndex == TeleportList.Num()-1)
+	{
+		TeleportIndex = 0;
+	}
+	else
+	{
+		TeleportIndex++;
+	}
+
+	SetActorLocation(TeleportList[TeleportIndex].GetLocation());
+	SkeletalMesh->SetRelativeRotation(TeleportList[TeleportIndex].GetRotation());
+	SetProjectileForward();
+}
+
+void AAShooter::TeleportPrevious()
+{
+	if (TeleportIndex == 0)
+	{
+		TeleportIndex = TeleportList.Num()-1;
+	}
+	else
+	{
+		TeleportIndex--;
+	}
+
+	SetActorLocation(TeleportList[TeleportIndex].GetLocation());
+	SkeletalMesh->SetRelativeRotation(TeleportList[TeleportIndex].GetRotation());
+	SetProjectileForward();
 }
 

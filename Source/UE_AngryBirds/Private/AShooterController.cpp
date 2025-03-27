@@ -32,6 +32,8 @@ void AAShooterController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAShooterController::Look);
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &AAShooterController::Shoot);
 		EnhancedInputComponent->BindAction(ShootPowerAction, ETriggerEvent::Triggered, this, &AAShooterController::ShootPower);
+		EnhancedInputComponent->BindAction(TeleportNextAction, ETriggerEvent::Triggered, this, &AAShooterController::TeleportNext);
+		EnhancedInputComponent->BindAction(TeleportPreviousAction, ETriggerEvent::Triggered, this, &AAShooterController::TeleportPrevious);
 	}
 }
 
@@ -72,5 +74,21 @@ void AAShooterController::ShootPower(const FInputActionInstance& Instance)
 		{
 			Shooter->DecreasePower();
 		}
+	}
+}
+
+void AAShooterController::TeleportNext(const FInputActionInstance& Instance)
+{
+	if (AAShooter* Shooter = Cast<AAShooter>(GetPawn()))
+	{
+		Shooter->TeleportNext();
+	}
+}
+
+void AAShooterController::TeleportPrevious(const FInputActionInstance& Instance)
+{
+	if (AAShooter* Shooter = Cast<AAShooter>(GetPawn()))
+	{
+		Shooter->TeleportPrevious();
 	}
 }

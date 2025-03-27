@@ -19,6 +19,8 @@ protected:
 	void Look(const FInputActionInstance& Instance);
 	void Shoot(const FInputActionInstance& Instance);
 	void ShootPower(const FInputActionInstance& Instance);
+	void TeleportNext(const FInputActionInstance& Instance);
+	void TeleportPrevious(const FInputActionInstance& Instance);
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TSoftObjectPtr<UInputMappingContext> InputMapping;
@@ -31,5 +33,10 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	UInputAction* ShootPowerAction;
+
+	UPROPERTY(EditAnywhere)
+	UInputAction* TeleportNextAction;
+	UPROPERTY(EditAnywhere)
+	UInputAction* TeleportPreviousAction;
 
 };
