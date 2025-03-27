@@ -59,8 +59,6 @@ protected:
 	// =======================
 
 	UPROPERTY()
-	float LaunchVelocity;
-	UPROPERTY()
 	float ProjectileRadius;
 
 	UPROPERTY(EditAnywhere)

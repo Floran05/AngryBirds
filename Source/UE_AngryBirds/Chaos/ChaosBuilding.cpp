@@ -28,7 +28,7 @@ void AChaosBuilding::BeginPlay()
 void AChaosBuilding::OnChaosBreakEvent(const FChaosBreakEvent& BreakEvent)
 {
 	DestroyedFragments++;
-	OnAddScore(GeometryCollection->GetMass() * (1.f / TotalFragments));
+	OnAddScore((GeometryCollection->GetMass() * (1.f / TotalFragments)) * 0.001f);
 }
 
 void AChaosBuilding::AddImpulseAtHitLocation(const FVector& Impulse, const FVector& Location)
@@ -38,5 +38,5 @@ void AChaosBuilding::AddImpulseAtHitLocation(const FVector& Impulse, const FVect
 
 float AChaosBuilding::GetMaxScoreForBuilding() const
 {
-	return GeometryCollection->GetMass();
+	return GeometryCollection->GetMass() * 0.001f;
 }

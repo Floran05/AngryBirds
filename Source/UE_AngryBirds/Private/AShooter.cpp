@@ -21,8 +21,7 @@ AAShooter::AAShooter()
 	, ShootPower(1.f)
 	, bCanShoot(true)
 	, ShootDelay(1.5f)
-	, BallAmount(5)
-	, RemainingBalls(5)
+	, BallAmount(10)
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -51,7 +50,7 @@ AAShooter::AAShooter()
 	ProjectileFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileFX"));
 	ProjectileFX->SetupAttachment(Projectile);
 
-	LaunchVelocity = 1000.0f;
+	RemainingBalls = BallAmount;
 }
 
 UStaticMeshComponent* AAShooter::GetProjectile() const
@@ -101,7 +100,7 @@ void AAShooter::OnShootNotify()
 {
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Owner = this;
-	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, Projectile->GetRelativeLocation() + GetActorLocation(), Projectile->GetRelativeRotation(), SpawnParameters);
+	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, Projectile->GetComponentLocation(), Projectile->GetRelativeRotation(), SpawnParameters);
 	SpawnedProjectile->Launch(Projectile->GetForwardVector() * ((ImpulseMaxMultiplier - ImpulseMinMultiplier) * ShootPower + ImpulseMinMultiplier));
 
 	Projectile->SetVisibility(false, true);
@@ -125,6 +124,7 @@ void AAShooter::Shoot()
 {
 	if (!ProjectileClass || !bCanShoot || !ShootAnimMontage || RemainingBalls <= 0) return;
 
+	bCanShoot = false;
 	RemainingBalls--;
 	OnShoot();
 
